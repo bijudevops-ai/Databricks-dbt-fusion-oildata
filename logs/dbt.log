@@ -1,0 +1,19 @@
+dbt-fusion 2.0.0-beta.49
+   Loading ~/.dbt/profiles.yml
+   Loading dbt_project.yml
+   Loading dbt_internal_packages/dbt-adapters/dbt_project.yml
+   Loading dbt_internal_packages/dbt-databricks/dbt_project.yml
+   Loading dbt_internal_packages/dbt-spark/dbt_project.yml
+ Rendering models/staging/stg_equipment_downtime.sql
+ Rendering models/staging/stg_well_metadata.sql
+ Rendering models/staging/stg_oil_production.sql
+ Rendering models/marts/oil_production_metrics.sql
+   Running models/staging/stg_equipment_downtime.sql
+   Running models/staging/stg_well_metadata.sql
+   Running models/staging/stg_oil_production.sql
+   Success models/staging/stg_well_metadata.sql
+   Success models/staging/stg_oil_production.sql
+   Success models/staging/stg_equipment_downtime.sql
+   Running models/marts/oil_production_metrics.sql
+   Success models/marts/oil_production_metrics.sql
+  Finished 'run' target 'dev' in 3s 771ms 771us

@@ -1,0 +1,6 @@
+name: 'oil_dbt_fusion'
+version: '1.0'
+profile: 'oil_dbt_fusion'
+models:
+  oil_dbt_fusion:
+    +materialized: view

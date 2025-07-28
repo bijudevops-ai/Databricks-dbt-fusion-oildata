@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: oil_data
+    description: "Raw oil industry data sources"
+    tables:
+      - name: oil_well_production_raw
+        description: "Daily oil production data from wells"
+      - name: equipment_downtime_raw
+        description: "Equipment downtime logs"
+      - name: well_metadata
+        description: "Well metadata including region and field"

@@ -1,0 +1,7 @@
+SELECT
+  WELL_ID,
+  DATE,
+  OIL_BARRELS,
+  GAS_CUBIC_FEET,
+  WATER_BARRELS
+FROM `bijucatalog`.`oil_data`.`oil_well_production_raw`

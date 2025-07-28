@@ -1,0 +1,31 @@
+version: 2
+
+semantic_models:
+  - name: oil_field_semantic
+    description: "Semantic model for oil production and equipment metrics."
+    model: ref('oil_production_metrics')
+    entities:
+      - name: well
+        type: primary
+        expr: WELL_ID
+      - name: field
+        type: foreign
+        expr: FIELD
+      - name: region
+        type: foreign
+        expr: REGION
+    measures:
+      - name: total_oil
+        description: "Total oil produced in barrels"
+        expr: OIL_BARRELS
+        agg: sum
+      - name: total_gas
+        expr: GAS_CUBIC_FEET
+        agg: sum
+      - name: avg_efficiency
+        expr: EFFICIENCY_BARRELS_PER_HOUR
+        agg: avg
+    dimensions:
+      - name: date
+        type: time
+        expr: DATE
