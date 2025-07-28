@@ -1,31 +1,43 @@
-version: 2
+{{ config(materialized='incremental', unique_key=['WELL_ID', 'DATE']) }}
 
-semantic_models:
-  - name: oil_field_semantic
-    description: "Semantic model for oil production and equipment metrics."
-    model: ref('oil_production_metrics')
-    entities:
-      - name: well
-        type: primary
-        expr: WELL_ID
-      - name: field
-        type: foreign
-        expr: FIELD
-      - name: region
-        type: foreign
-        expr: REGION
-    measures:
-      - name: total_oil
-        description: "Total oil produced in barrels"
-        expr: OIL_BARRELS
-        agg: sum
-      - name: total_gas
-        expr: GAS_CUBIC_FEET
-        agg: sum
-      - name: avg_efficiency
-        expr: EFFICIENCY_BARRELS_PER_HOUR
-        agg: avg
-    dimensions:
-      - name: date
-        type: time
-        expr: DATE
+WITH prod AS (
+    SELECT
+        p.WELL_ID,
+        w.FIELD,
+        w.REGION,
+        p.DATE,A
+        p.OIL_BARRELS,
+        p.GAS_CUBIC_FEET,
+        p.WATER_BARRELS
+    FROM {{ ref('stg_oil_production') }} p
+    JOIN {{ ref('stg_well_metadata') }} w
+      ON p.WELL_ID = w.WELL_ID
+    {% if is_incremental() %}
+      WHERE p.DATE > (SELECT MAX(DATE) FROM {{ this }})
+    {% endif %}
+),
+downtime AS (
+    SELECT
+        WELL_ID,
+        DATE,
+        SUM(DOWNTIME_HOURS) AS TOTAL_DOWNTIME
+    FROM {{ ref('stg_equipment_downtime') }}
+    {% if is_incremental() %}
+      WHERE DATE > (SELECT MAX(DATE) FROM {{ this }})
+    {% endif %}
+    GROUP BY WELL_ID, DATE
+)
+SELECT
+    prod.WELL_ID,
+    prod.FIELD,
+    prod.REGION,
+    prod.DATE,
+    prod.OIL_BARRELS,
+    prod.GAS_CUBIC_FEET,
+    prod.WATER_BARRELS,
+    downtime.TOTAL_DOWNTIME,
+    (prod.OIL_BARRELS / NULLIF(downtime.TOTAL_DOWNTIME + 24, 0)) AS EFFICIENCY_BARRELS_PER_HOUR
+FROM prod
+LEFT JOIN downtime
+  ON prod.WELL_ID = downtime.WELL_ID
+ AND prod.DATE = downtime.DATE
